@@ -5,7 +5,7 @@ const ImageLink = ({onInputChange, onButtonSubmit}) => {
 	return(
 		<div>
 			<p className='f3'>
-				{'Detect faces in your pictures by putting the image link in the box below'}
+				{'This web App analyzes images and returns information on age, gender, and multicultural appearance'}
 			</p>
 			<div className="flex-center">
 				<div className="form flex-center pa4 br3 shadow-5">

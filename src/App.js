@@ -34,6 +34,7 @@ class App extends Component {
 			input: '',
 			imageUrl: '',
 			box: {},
+			Demo: {},
 			route: 'SignIn',
 			isSignedIn: false,
 		}
@@ -55,7 +56,6 @@ class App extends Component {
 
 	calculateFaceLocation = (data) => {
 		const clarifaiFace = data.outputs[0].data.regions[0].region_info.bounding_box;
-		console.log(clarifaiFace);
 		const image = document.getElementById('inputimage');
 		const width = Number(image.width);
 		const height = Number(image.height);
@@ -67,20 +67,39 @@ class App extends Component {
 		}
 	}
 
+	demographyDetails = (data) => {
+		const age = data.outputs[0].data.regions[0].data.face.age_appearance.concepts[0].name;
+		const gender = data.outputs[0].data.regions[0].data.face.gender_appearance.concepts[0].name;
+		const appearance = data.outputs[0].data.regions[0].data.face.multicultural_appearance.concepts[0].name;
+
+		console.log('Age is', age);
+		return {
+			userAge: age,
+			userGenger: gender,
+			userAppearance: appearance
+		}
+	}
+
 	displayBox = (box) => {
 		this.setState({box: box});
-		console.log(box);
+	}
+
+	displayDemographics = (Demo) => {
+		this.setState({Demo: Demo});
 	}
 
 	onButtonSubmit = () => {
 		this.setState({imageUrl: this.state.input});
 
-		app.models.predict(Clarifai.FACE_DETECT_MODEL, this.state.input)
-			.then(response => this.displayBox(this.calculateFaceLocation(response)))
+		app.models.predict(Clarifai.DEMOGRAPHICS_MODEL, this.state.input)
+			.then(response => {
+				this.displayBox(this.calculateFaceLocation(response));
+				this.displayDemographics(this.demographyDetails(response));
+			})
 			.catch(err => console.log(err));
 	}
 	render() {
-		const { isSignedIn, box, route, imageUrl } = this.state;
+		const { isSignedIn, box, route, imageUrl, Demo } = this.state;
 		return (
 			<div className="App">
 				<Particles
@@ -93,7 +112,7 @@ class App extends Component {
 						<AppLogo />
 						<Rank />
 						<ImageForm onInputChange = {this.onInputChange} onButtonSubmit= {this.onButtonSubmit}/>
-						<FaceBrain box= {box} imageUrl = {imageUrl} />
+						<FaceBrain box= {box} Demo= {Demo} imageUrl = {imageUrl} />
 					</div>
 					:
 					(
