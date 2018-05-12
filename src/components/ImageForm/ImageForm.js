@@ -4,7 +4,7 @@ import './assets/ImageForm.css';
 const ImageLink = ({onInputChange, onButtonSubmit}) => {
 	return(
 		<div>
-			<p className='f3'>
+			<p className='f5'>
 				{'This web App analyzes images and returns information on age, gender, and multicultural appearance'}
 			</p>
 			<div className="flex-center">

@@ -34,8 +34,9 @@ class SignIn extends Component {
 			})
 		})
 		.then(response => response.json())
-		.then(data => {
-			if (data === 'success') {
+		.then(user => {
+			if (user.id) {
+				this.props.userDetails(user)
 				this.props.onRouteChange('home');
 			}
 			else {
@@ -52,7 +53,7 @@ class SignIn extends Component {
 		return(
 			<article className="br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw8 center">
 				 <main className="pa4 black-80">
-					<form className="measure center">
+					<div className="measure center">
 						   <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
 									  <legend className="f2 fw6 ph0 mh0">Sign In</legend>
 									   <div className="mt3">
@@ -85,7 +86,7 @@ class SignIn extends Component {
 							   <div className="lh-copy mt3">
 									  <a onClick = { () => onRouteChange('Register') } className="f6 link dim black db pointer">Register</a>
 							   </div>
-					</form>
+					</div>
 				 </main>
 			</article>
 		);

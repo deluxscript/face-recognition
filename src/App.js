@@ -26,25 +26,27 @@ const particleprops = {
 	}
 }
 
+const initialstate = {
+	input: '',
+	imageUrl: '',
+	box: {},
+	Demo: {},
+	route: 'SignIn',
+	isSignedIn: false,
+	user: {
+		id: '',
+		name: '',
+		email: '',
+		entries: 0,
+		joined: ''
+	}
+}
+
 class App extends Component {
 
 	constructor() {
 		super();
-		this.state = {
-			input: '',
-			imageUrl: '',
-			box: {},
-			Demo: {},
-			route: 'SignIn',
-			isSignedIn: false,
-			user: {
-				id: '',
-				name: '',
-				email: '',
-				entries: 0,
-				joined: ''
-			}
-		}
+		this.state = initialstate;
 	}
 
 	userDetails = (data) => {
@@ -66,7 +68,7 @@ class App extends Component {
 
 	onRouteChange = (route) => {
 		if (route === 'SignOut') {
-			this.setState({isSignedIn: false});
+			this.setState(initialstate);
 		}
 		else if (route === 'home') {
 			this.setState({isSignedIn: true});
@@ -113,6 +115,20 @@ class App extends Component {
 
 		app.models.predict(Clarifai.DEMOGRAPHICS_MODEL, this.state.input)
 			.then(response => {
+				if (response) {
+					fetch('http://localhost:3001/image/', {
+						method: 'put',
+						headers: {'Content-Type': 'application/json'},
+						body: JSON.stringify({
+							id: this.state.user.id
+						})
+					})
+					.then(response => response.json())
+					.then(count => {
+						this.setState(Object.assign(this.state.user, {entries: count}))
+					})
+					.catch(err => console.log());
+				}
 				this.displayBox(this.calculateFaceLocation(response));
 				this.displayDemographics(this.demographyDetails(response));
 			})
@@ -130,14 +146,14 @@ class App extends Component {
 				{	route === 'home' ?
 					<div>
 						<AppLogo />
-						<Rank />
+						<Rank name={this.state.user.name} entries={this.state.user.entries}/>
 						<ImageForm onInputChange = {this.onInputChange} onButtonSubmit= {this.onButtonSubmit}/>
 						<FaceBrain box= {box} Demo= {Demo} imageUrl = {imageUrl} />
 					</div>
 					:
 					(
 						route === 'SignIn' ?
-						<SignIn  onRouteChange = {this.onRouteChange}/>
+						<SignIn  onRouteChange = {this.onRouteChange} userDetails = {this.userDetails}/>
 						:
 						<Register  onRouteChange = {this.onRouteChange} userDetails = {this.userDetails}/>
 					)
