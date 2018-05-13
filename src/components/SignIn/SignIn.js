@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactLoading from 'react-loading';
 
 class SignIn extends Component {
 
@@ -8,7 +9,8 @@ class SignIn extends Component {
 		this.state = {
 			signInEmail: '',
 			signInPassword: '',
-			errorMsg: false
+			errorMsg: false,
+			loading: false
 		}
 	}
 
@@ -24,8 +26,13 @@ class SignIn extends Component {
 		this.setState({errorMsg: true});
 	}
 
+	showLoading = (event) => {
+		this.setState({loading: true});
+	}
+
 	onSubmitSignIn = () => {
-		fetch('http://localhost:3001/signin/', {
+		this.showLoading();
+		fetch('https://limitless-basin-60633.herokuapp.com/signin/', {
 			method: 'post',
 			headers: {'Content-Type':'application/json'},
 			body: JSON.stringify({
@@ -49,6 +56,7 @@ class SignIn extends Component {
 
 		const { onRouteChange } = this.props;
 		const displayError = this.state.errorMsg ? {display: 'block'} : {display: 'none'};
+		const showloader = this.state.loading ? {display: 'block'} : {display: 'none'};
 
 		return(
 			<article className="br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw8 center">
@@ -81,6 +89,9 @@ class SignIn extends Component {
 									  type="submit"
 									  value="Sign in"
 									  onClick = {this.onSubmitSignIn} />
+									  <div style = {showloader}>
+									  	<ReactLoading type="bars" color="#fff"/>
+									  </div>
 									  <p style = {displayError}>Your login credentials are wrong</p>
 							</div>
 							   <div className="lh-copy mt3">

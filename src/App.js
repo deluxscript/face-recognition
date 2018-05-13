@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import Modal from 'react-responsive-modal';
+
+
 import './App.css';
 import  Account from './components/Account/Account';
 import  AppLogo from './components/AppLogo/AppLogo';
@@ -28,6 +31,7 @@ const particleprops = {
 
 const initialstate = {
 	input: '',
+	open: false,
 	imageUrl: '',
 	box: {},
 	Demo: {},
@@ -82,7 +86,7 @@ class App extends Component {
 		const width = Number(image.width);
 		const height = Number(image.height);
 		return {
-			leftCol: clarifaiFace.left_col * width,
+			leftCol: 478.53 + (clarifaiFace.left_col * width),
 			topRow: clarifaiFace.top_row * height,
 			rightCol: width - (clarifaiFace.right_col * width),
 			bottomRow: height - (clarifaiFace.bottom_row * height)
@@ -110,13 +114,22 @@ class App extends Component {
 		this.setState({Demo: Demo});
 	}
 
+	onOpenModal = () => {
+		this.setState({ open: true });
+	};
+
+	onCloseModal = () => {
+		this.setState({ open: false });
+	};
+
 	onButtonSubmit = () => {
 		this.setState({imageUrl: this.state.input});
+		this.onOpenModal();
 
 		app.models.predict(Clarifai.DEMOGRAPHICS_MODEL, this.state.input)
 			.then(response => {
 				if (response) {
-					fetch('http://localhost:3001/image/', {
+					fetch('https://limitless-basin-60633.herokuapp.com/image/', {
 						method: 'put',
 						headers: {'Content-Type': 'application/json'},
 						body: JSON.stringify({
@@ -135,7 +148,7 @@ class App extends Component {
 			.catch(err => console.log(err));
 	}
 	render() {
-		const { isSignedIn, box, route, imageUrl, Demo } = this.state;
+		const { isSignedIn, box, route, imageUrl, Demo, open } = this.state;
 		return (
 			<div className="App">
 				<Particles
@@ -148,7 +161,21 @@ class App extends Component {
 						<AppLogo />
 						<Rank name={this.state.user.name} entries={this.state.user.entries}/>
 						<ImageForm onInputChange = {this.onInputChange} onButtonSubmit= {this.onButtonSubmit}/>
-						<FaceBrain box= {box} Demo= {Demo} imageUrl = {imageUrl} />
+						<Modal
+							open={open}
+							onClose={this.onCloseModal}
+							center
+							classNames={{
+								transitionEnter: 'transition-enter',
+								transitionEnterActive: 'transition-enter-active',
+								transitionExit: 'transition-exit-active',
+								transitionExitActive: 'transition-exit-active',
+							}}
+							animationDuration={1000}
+						>
+							<FaceBrain box= {box} Demo= {Demo} imageUrl = {imageUrl} />
+						</Modal>
+						
 					</div>
 					:
 					(

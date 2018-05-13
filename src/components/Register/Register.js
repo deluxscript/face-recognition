@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactLoading from 'react-loading';
 
 class Register extends Component {
 
@@ -8,7 +9,8 @@ class Register extends Component {
 			registerEmail: '',
 			registerPassword: '',
 			registerName: '',
-			errorMsg: false
+			errorMsg: false,
+			regLoading: false
 		}
 	}
 
@@ -28,8 +30,13 @@ class Register extends Component {
 		this.setState({errorMsg: true});
 	}
 
+	showregLoading = (event) => {
+		this.setState({regLoading: true});
+	}
+
 	onRegister = () => {
-		fetch('http://localhost:3001/register/', {
+		this.showregLoading();
+		fetch('https://limitless-basin-60633.herokuapp.com/register/', {
 			method: 'post',
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify({
@@ -53,6 +60,7 @@ class Register extends Component {
 	render() {
 
 		const displayError = this.state.errorMsg ? {display: 'block'} : {display: 'none'};
+		const showregloader = this.state.regLoading ? {display: 'block'} : {display: 'none'};
 
 		return(
 			<article className="br2 ba dark-gray b--black-10 mv4 w-100 w-50-m w-25-l mw8 center">
@@ -98,6 +106,9 @@ class Register extends Component {
 									  value="Register"
 									  onClick = {this.onRegister}
 									  />
+									  <div style = {showregloader}>
+									  	<ReactLoading type="bars" color="#fff"/>
+									  </div>
 										<p style = {displayError}>All fields are required</p>
 							</div>
 					</div>
